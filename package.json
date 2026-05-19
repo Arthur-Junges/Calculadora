@@ -1,12 +1,23 @@
 {
-  "name": "calculadora",
+  "name": "calculadora-backend",
   "version": "1.0.0",
   "description": "Backend da calculadora online com Fastify, PostgreSQL, JWT e histórico de cálculos",
-  "main": "src/server.js",
+  "main": "backend/src/server.js",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "dev": "nodemon --watch backend/src --ext js,json backend/src/server.js",
+    "start": "node backend/src/server.js",
+    "test": "echo \"Nenhum teste configurado\" && exit 0"
   },
+  "keywords": [
+    "calculadora",
+    "fastify",
+    "postgresql",
+    "jwt",
+    "backend"
+  ],
+  "author": "João Victor Lopes",
+  "license": "MIT",
+  "type": "commonjs",
   "dependencies": {
     "@fastify/cors": "^11.1.0",
     "@fastify/jwt": "^10.0.0",
@@ -14,5 +25,8 @@
     "dotenv": "^17.2.3",
     "fastify": "^5.6.2",
     "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
