@@ -1,42 +1,51 @@
-require('dotenv').config();
+require("dotenv").config();
 
-const fastify = require('fastify')({
-  logger: true
+const Fastify = require("fastify");
+const cors = require("@fastify/cors");
+const jwt = require("@fastify/jwt");
+
+const authRoutes = require("./routes/authRoutes");
+const calculationRoutes = require("./routes/calculationRoutes");
+
+const app = Fastify({ logger: true });
+
+app.register(cors, {
+  origin: true
 });
 
-const cors = require('@fastify/cors');
-
-const authRoutes = require('./routes/authRoutes');
-const calculoRoutes = require('./routes/calculationRoutes');
-
-fastify.register(cors, {
-  origin: '*'
+app.register(jwt, {
+  secret: process.env.JWT_SECRET || "chave_padrao_dev"
 });
 
-// Rota inicial para testar se a API está funcionando
-fastify.get('/', async () => {
+app.get("/", async () => {
   return {
-    message: 'API da Calculadora Online funcionando!',
-    status: 'ok'
+    status: "ok",
+    message: "API da Calculadora Online funcionando!"
   };
 });
 
-// Rotas do sistema
-fastify.register(authRoutes, { prefix: '/auth' });
-fastify.register(calculoRoutes, { prefix: '/calculos' });
+app.get("/api/health", async () => {
+  return {
+    status: "ok",
+    message: "Backend da calculadora funcionando."
+  };
+});
+
+app.register(authRoutes, { prefix: "/api/auth" });
+app.register(calculationRoutes, { prefix: "/api/calculations" });
 
 const start = async () => {
   try {
     const port = process.env.PORT || 3000;
 
-    await fastify.listen({
+    await app.listen({
       port: Number(port),
-      host: '0.0.0.0'
+      host: "0.0.0.0"
     });
 
     console.log(`Servidor rodando em http://localhost:${port}`);
   } catch (error) {
-    fastify.log.error(error);
+    app.log.error(error);
     process.exit(1);
   }
 };
