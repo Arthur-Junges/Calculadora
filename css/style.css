@@ -4,93 +4,135 @@
     --bg-body: #f4f7f9;
     --calc-white: #ffffff;
     --display-bg: #f8fafc;
-    --text-dark: #0f172a;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
     --btn-gray: #f1f5f9;
     --btn-gray-dark: #e2e8f0;
     --btn-operator: #1e293b;
     --accent: #334155;
+    --border-color: #e2e8f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
     background-color: var(--bg-body);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Organiza Topo -> Conteúdo */
     align-items: center;
     font-family: 'Inter', -apple-system, sans-serif;
 }
 
-.calculator-container {
+/* --- CABEÇALHO SUPERIOR --- */
+/* --- CABEÇALHO SUPERIOR --- */
+
+.top-nav {
+    width: 100%;
+    
     background: var(--calc-white);
-    padding: 30px;
-    border-radius: 32px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
-    width: 360px;
+
+    border-bottom: 1px solid var(--border-color);
+
+    padding: 16px 40px;
+
+    margin-bottom: 50px;
+
+    display: flex;
+    justify-content: center;
 }
 
-.calc-header {
+.nav-container {
+    width: 100%;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding: 0 5px;
 }
 
-.logo {
-    font-weight: 700;
-    color: #1e293b;
-    font-size: 1.1rem;
-}
+/* LOGO */
 
-.nav-buttons {
+.logo-area {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 10px;
+
+    font-weight: 700;
+    color: var(--text-main);
+
+    font-size: 1.2rem;
+}
+
+/* BOTÕES */
+
+.nav-actions {
+    display: flex;
+    gap: 12px;
 }
 
 .header-btn {
     background: transparent;
+
     border: none;
-    color: #64748b;
-    font-size: 0.85rem;
-    font-weight: 500;
+
+    padding: 10px 18px;
+
+    border-radius: 10px;
+
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    color: var(--text-muted);
+
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+
+    transition: 0.2s;
+
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.header-btn:hover {
-    background-color: #f1f5f9;
-    color: #1e293b;
-}
-
-.header-btn:active {
-    transform: scale(0.95);
+.header-btn:hover,
+.header-btn.active {
+    background: var(--btn-gray);
+    color: var(--text-main);
 }
 
 .header-btn.exit:hover {
-    color: #ef4444; 
+    color: #ef4444;
+}
+
+/* --- CARD PRINCIPAL (Calculadora e Histórico) --- */
+.calculator-container {
+    background: var(--calc-white);
+    padding: 30px;
+    border-radius: 32px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+    width: 360px;
+    border: 1px solid var(--border-color);
 }
 
 .display {
     background: var(--display-bg);
     height: 100px;
-    border-radius: 16px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding: 0 24px;
     margin-bottom: 24px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--btn-gray-dark);
 }
 
 .current-operand {
     font-size: 42px;
     font-weight: 500;
-    color: var(--text-dark);
+    color: var(--text-main);
 }
 
 .buttons-grid {
@@ -107,11 +149,10 @@ body {
     font-weight: 600;
     cursor: pointer;
     background: var(--btn-gray);
-    color: var(--text-dark);
+    color: var(--text-main);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Efeito de mouse em cima e Clique */
 .btn:hover {
     background: var(--btn-gray-dark);
     transform: translateY(-2px);
@@ -121,18 +162,37 @@ body {
     transform: translateY(1px) scale(0.96);
 }
 
-.fn-btn { background: var(--btn-gray-dark); }
-
-.operator {
+.operator, .equal {
     background: var(--btn-operator);
     color: white;
 }
 
-.operator:hover { background: var(--accent); }
-
-.equal {
-    background: var(--btn-operator);
-    color: white;
+.operator:hover, .equal:hover {
+    background: var(--accent);
 }
 
-.double-width { grid-column: span 2; }
+.double-width { 
+    grid-column: span 2; 
+}
+
+/* --- TELA DE HISTÓRICO --- */
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.history-box {
+    border: 1px solid var(--border-color);
+    background: var(--display-bg);
+    border-radius: 16px;
+    padding: 20px;
+    min-height: 200px;
+}
+
+.empty-msg {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 50px;
+}
