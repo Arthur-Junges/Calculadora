@@ -1,3 +1,5 @@
+//aqui é onde coloca os dados no banco e que puxa as informações
+
 const db = require('../db/connection');
 
 async function salvar({ userId, n1, n2, operador, resultado }) {

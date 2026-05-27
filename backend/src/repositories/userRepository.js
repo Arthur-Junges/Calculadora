@@ -1,3 +1,5 @@
+//aqui a gente salva os dados do login e faz a busca do login
+
 const db = require('../db/connection');
 
 async function buscarPorEmail(email) {

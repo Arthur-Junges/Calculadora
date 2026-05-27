@@ -1,3 +1,5 @@
+//aqui ta os serviços do calculo que vai fazer
+
 const OPERADORES_UNARIOS = ['sqrt', 'log'];
 
 function calcular(n1, n2, operador) {

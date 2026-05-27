@@ -1,3 +1,5 @@
+//aqui é o server
+
 require("dotenv").config();
 
 const Fastify = require("fastify");

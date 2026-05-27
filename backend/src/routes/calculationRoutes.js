@@ -1,3 +1,5 @@
+// rota dos calculos e do historico
+
 const { authenticate } = require('../middlewares/auth');
 const calculationService = require('../services/calculationService');
 const calculationRepository = require('../repositories/calculationRepository');

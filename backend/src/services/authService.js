@@ -1,3 +1,5 @@
+//aqui a gente ta colocando as funções de autenticação
+
 const bcrypt = require('bcryptjs');
 const userRepository = require('../repositories/userRepository');
 

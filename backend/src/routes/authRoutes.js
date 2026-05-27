@@ -1,3 +1,5 @@
+//rotas de autenticação 
+
 const authService = require('../services/authService');
 
 async function authRoutes(app) {

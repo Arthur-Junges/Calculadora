@@ -1,3 +1,5 @@
+//aqui fazemos a autenticação
+
 async function authenticate(request, reply) {
   try {
     await request.jwtVerify();
