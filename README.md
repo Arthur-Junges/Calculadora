@@ -1,14 +1,61 @@
-# Calculadora
-Projeto de calculadora da faculdade
+# Calculadora:
+###Projeto de calculadora online desenvolvida para a faculdade, com autenticação de usuario e operações de matematica.
+
+## SOBRE:
+A aplicação permite que o usuario realize operações basicas de matematica, como soma, subtração, divisão e multiplicação.
+Além disso o sistema possui autenticação e histórico de calculos realizados.
+
+Projeto é dividido em:
+- Frontend: HTML, CSS e Javascript
+- Backend: Node.js e Fastify
+- Banco de dados: PostgresSQL
+- Autenticação:JWT
+- Segurança:Bcrypt
+
+## Funcionalidades:
+- Autenticação
+- Login
+- Histórico
+- Calculos realizados no servidor
+- Integração com banco de dados para salvar histórico (supabase)
+- Interface simples
+
+## Recursos usados:
+- HTML
+- CSS
+- NODE
+- FASTIFY
+- POSTGRES
+- JWT
+- DOTENV
+- NODEMON
+
+## Estrutura:
+
+```txt
+Calculadora/
+│
+├── backend/
+│   └── src/
+│       ├── db/
+│       ├── middlewares/
+│       ├── repositories/
+│       ├── routes/
+│       ├── services/
+│       └── server.js
+│
+├── css/
+├── js/
+├── index.html
+├── autentication.html
+├── package.json
+├── package-lock.json
+├── .env.example
+├── .gitignore
+└── README.md
+  
 
 
 
 
-dentro da server.ks (explicação bem por cima)
-// são rotas, muitas rotas puxando da api, 
-// e cada rota tem um prefixo, tipo:
-// /api/auth, /api/calculations
-// E cada rota tem um arquivo separado, tipo authRoutes.js, calculationRoutes.js
-// Arquivos de rota tem as rotas relacionadas a ele, tipo authRoutes.js tem as rotas de login e cadastro, calculationRoutes.js tem as rotas de cálculo e histórico
-// Cada rota tem um handler que é a função que vai ser executada quando a rota for chamada. 
-// O handler tem acesso ao request e reply do Fastify, pode usar o db para acessar o banco de dados, e pode usar o app.jwt para gerar ou verificar tokens JWT
+
