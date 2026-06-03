@@ -33,6 +33,7 @@ const schemaLogin = {
 //se der erro, na minha maquina tava funcionando
 
 async function authRoutes(app) {
+  //rateLimit mais restritivo para rotas de autenticação
   await AudioParam.register(rateLimit, {
     max: 10,
     timeWindow: "1 minute",
@@ -49,6 +50,31 @@ async function authRoutes(app) {
     } catch (error) {
       return reply.status(error.status || 500).send({ message: error.message });
     }
+  });
+
+  app.post("/login", { schema: schemaLogin }, async (request, reply) => {
+    try {
+      const dados = await authService.login({ ...request.body, app });
+        // Define o JWT em cookie httponly — JavaScript do browser não consegue lê-lo
+      reply.setCookie("token", dados.token, {
+        httpOnly: true,
+        secure:   process.env.NODE_ENV === "production", // HTTPS em prod
+        sameSite: "strict",
+        path:     "/",
+        maxAge:   2 * 60 * 60,
+      });
+  
+      // Não envia o token no corpo — só o usuário
+      return reply.send({ message: "Login realizado com sucesso.", user: dados.user });
+    } catch (error) {
+      return reply.status(error.status || 500).send({ message: error.message });
+    }
+  });
+
+  // Se sair, ele apaga o cookie no browser
+  app.post("/logout", async (_request, reply) => {
+    reply.clearCookie("token", { path: "/" });
+    return reply.send({ message: "Logout realizado." });
   });
 }
 
