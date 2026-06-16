@@ -1,5 +1,5 @@
-/*Conexão com o Banco de Dados*/
-//arrumar aqui depois para arrumar o ssl sem verificação de certificado, lembra de ver se eu ja arrumei a env exemplo
+/* Conexão com o Banco de Dados */
+
 const { Pool } = require('pg');
 const path = require('path');
 
@@ -12,20 +12,24 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-const isSupabase = process.env.DATABASE_URL.includes('supabase.com');
+console.log('DATABASE_URL carregada:', process.env.DATABASE_URL);
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isSupabase
-    ? {
-        // rejectUnauthorized: true valida o certificado SSL do servidor.
-        // Se necessário, forneça o CA do Supabase via DATABASE_CA_CERT no .env.
-        rejectUnauthorized: true,
-        ...(process.env.DATABASE_CA_CERT
-          ? { ca: process.env.DATABASE_CA_CERT }
-          : {}),
-      }
-    : false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
+
+// Teste de conexão ao iniciar
+pool.query('SELECT NOW()')
+  .then((res) => {
+    console.log('✅ Banco conectado com sucesso!');
+    console.log('Horário do banco:', res.rows[0]);
+  })
+  .catch((err) => {
+    console.error('❌ Erro ao conectar no banco:');
+    console.error(err);
+  });
 
 module.exports = pool;

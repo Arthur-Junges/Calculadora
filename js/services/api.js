@@ -46,7 +46,7 @@ export async function login(body) {
 export async function registrar(body) {
   const res = await fetch(`${API_URL}/api/auth/register`, {
     method: 'POST',
-    credentials: 'include'
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
