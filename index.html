@@ -3,48 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Minimalista</title>
+    <title>Calculadora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
-    <!-- Como vai ficar os botões para outras areas (historico e tals)-->
+
     <div class="main-wrapper">
         <header class="top-nav">
             <div class="nav-container">
                 <div class="logo-area">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="9" x2="15" y2="9"></line>
+                        <line x1="9" y1="13" x2="15" y2="13"></line>
+                        <line x1="9" y1="17" x2="15" y2="17"></line>
+                    </svg>
                     <span>Calculadora</span>
                 </div>
+                <nav class="nav-actions">
+                    <button class="header-btn active" id="btn-show-calc">Calculadora</button>
+                    <button class="header-btn" id="btn-show-history">Histórico</button>
+                    <button class="header-btn exit" id="btn-exit">Sair</button>
+                </nav>
             </div>
-            <nav class="nav-actions">
-                <button class="header-btn active" id="btn-show-calc">Calculadora</button>
-                <button class="header-btn" id="btn-show-history">Historico</button>
-                <button class="header-btn exit" id="btn-exit">Sair</button>
-            </nav>
         </header>
 
-        <main class="auth-card">
+        <main class="calculator-container">
             <section id="section-calc">
                 <div class="display">
-                    <div id="display-expressao" style="font-size:0.5em; min-height:1.2em; color:#888; text-align:right; word-break:break-all;"></div>
+                    <div id="display-expressao"></div>
                     <div id="display-value">0</div>
                 </div>
                 <div class="buttons-grid">
-                    <button class="btn fn btn" data-action="clear">AC</button>
-                    <button class="btn fn-btn" data-action="sign">+/-</button>
+                    <button class="btn fn" data-action="clear">AC</button>
+                    <button class="btn fn-btn" data-action="sign">+/−</button>
                     <button class="btn fn-btn" data-action="percent">%</button>
                     <button class="btn operator" data-op="÷">÷</button>
 
                     <button class="btn number">7</button>
                     <button class="btn number">8</button>
                     <button class="btn number">9</button>
-                    <button class="btn operator" data-op="*">x</button>
+                    <button class="btn operator" data-op="*">×</button>
 
                     <button class="btn number">4</button>
                     <button class="btn number">5</button>
                     <button class="btn number">6</button>
-                    <button class="btn operator" data-op="-">-</button>
+                    <button class="btn operator" data-op="-">−</button>
 
                     <button class="btn number">1</button>
                     <button class="btn number">2</button>
@@ -53,26 +60,25 @@
 
                     <button class="btn fn-btn" data-action="sqrt">√</button>
                     <button class="btn fn-btn" data-action="log">log</button>
-                    <button class="btn operator" data-op="^">xʸ</button>
+                    <button class="btn fn-btn" data-op="^">xʸ</button>
                     <button class="btn fn-btn" data-action="backspace">⌫</button>
 
-                    <button class="btn number zero-btn">0</button>
+                    <button class="btn number" style="grid-column: span 2;">0</button>
                     <button class="btn number">.</button>
-                    <button class="btn equal" id="equals-btn" style="grid-column: span 2;">=</button>
+                    <button class="btn equal" id="equals-btn">=</button>
                 </div>
             </section>
 
             <section id="section-history" style="display: none;">
-                <h2 class="section-title">Historico</h2>
+                <h2 class="section-title">Histórico</h2>
                 <div class="history-box">
-                    <p class="empty-msg">Nenhum Cálculo ainda. Volte para o calculadora e faça uma operação.</p>
+                    <p class="empty-msg">Nenhum cálculo ainda.<br>Volte para a calculadora e faça uma operação.</p>
                     <div id="history-list"></div>
                 </div>
             </section>
         </main>
-        </div>
     </div>
-    
+
     <script type="module" src="./js/controllers/calculator.js"></script>
 </body>
 </html>
