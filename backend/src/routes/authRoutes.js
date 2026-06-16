@@ -58,8 +58,8 @@ async function authRoutes(app) {
         // Define o JWT em cookie httponly — JavaScript do browser não consegue lê-lo
       reply.setCookie("token", dados.token, {
         httpOnly: true,
-        secure:   process.env.NODE_ENV === "production", // HTTPS em prod
-        sameSite: "strict",
+        secure:   process.env.NODE_ENV === "production",
+        sameSite: "lax",
         path:     "/",
         maxAge:   2 * 60 * 60,
       });

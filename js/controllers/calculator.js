@@ -44,7 +44,7 @@ document.querySelectorAll('.number').forEach((btn) => {
 });
 
 // Operadores binários
-document.querySelectorAll('.operator').forEach((btn) => {
+document.querySelectorAll('[data-op]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const op = btn.dataset.op;
     if (!op) return;
@@ -65,14 +65,15 @@ async function aplicarUnaria(operador) {
   const opNormalizado = normalizarOperador(operador);
 
   try {
-    const calc = await calcular({ firstNumber: Number(ultimo), operador: opNormalizado});
+    const calc = await calcular({ firstNumber: Number(ultimo), operator: opNormalizado});
+    const resultado = String(parseFloat(calc.result));
     const texto = `${opNormalizado}(${ultimo})`;
     displayExpressao.innerText = texto + ' =';
-    displayValor.innerText = calc.result;
-    expressao = [calc.result.toString()];
-    digitandoNumero = true; 
+    displayValor.innerText = resultado;
+    expressao = [resultado];
+    digitandoNumero = true;
     acabouDeCalcular = true;
-    adicionarHistoricoLocal(texto, calc.result);
+    adicionarHistoricoLocal(texto, resultado);
   } catch (err) { alert(err.message); }
 }
 
@@ -94,7 +95,7 @@ document.getElementById('equals-btn')?.addEventListener('click', async () => {
         secondNumber: Number(n2), 
         operator: op,
       });
-      acumulador = calc.result.toString();
+      acumulador = String(parseFloat(calc.result));
     } catch (err) { 
        displayValor.innerText = 'Erro';
        alert(err.message); 
@@ -216,15 +217,15 @@ document.addEventListener('keydown', (e) => {
   const mapaOperador = {
     '+': '+',
     '-': '-',
-    '*': 'x',   // x é o data-op do botão de multiplicação
-    '/': '÷',   // ÷ é o data-op do botão de divisão
+    '*': '*',
+    '/': '÷',
     '^': '^',
   };
 
   if (mapaOperador[tecla]) {
-    const opDisplay = mapaOperador[tecla];
-    const btn = [...document.querySelectorAll('.operator')]
-      .find(b => b.dataset.op === opDisplay || b.innerText === opDisplay);
+    const opAlvo = mapaOperador[tecla];
+    const btn = [...document.querySelectorAll('[data-op]')]
+      .find(b => b.dataset.op === opAlvo);
     btn?.click();
     return;
   }

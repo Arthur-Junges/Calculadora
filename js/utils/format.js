@@ -9,3 +9,8 @@ export function operadorParaDisplay(op) {
 export function ehOperador(val) {
   return ['+', '-', '*', '÷', '^'].includes(val);
 }
+
+export function normalizarOperador(op) {
+  if (op === '÷') return '/';
+  return op;
+}

@@ -48,7 +48,7 @@ async function login({ email, password, app }) {
     throw Object.assign(new Error('Email ou senha inválidos.'), { status: 401 });
   }
 
-  const user = await userRepository.buscarPorEmail(email.toLoweCase());
+  const user = await userRepository.buscarPorEmail(email.toLowerCase());
   if (!user) {
     throw Object.assign(new Error('Email ou senha inválidos.'), { status: 401 });
   }
