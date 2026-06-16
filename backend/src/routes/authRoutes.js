@@ -34,7 +34,7 @@ const schemaLogin = {
 
 async function authRoutes(app) {
   //rateLimit mais restritivo para rotas de autenticação
-  await AudioParam.register(rateLimit, {
+  await app.register(rateLimit, {
     max: 10,
     timeWindow: "1 minute",
     keyGenerator: (req) => req.ip,
