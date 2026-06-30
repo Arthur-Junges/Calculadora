@@ -14,6 +14,9 @@ const schemaRegistrar = {
       name:     { type: "string", minLength: 2,  maxLength: 80  },
       email:    { type: "string", format: "email", maxLength: 254 },
       password: { type: "string", minLength: 6,  maxLength: 72  },
+      instituicao: {type: "string", minLength: 2, maxLength: 100 },
+      escolaridade: { type: "string", minLength: 2, maxLength: 50 },
+      endereco: { type: "string",  minLength: 5, maxLength: 150 }
     },
   },
 };

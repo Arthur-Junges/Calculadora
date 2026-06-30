@@ -8,8 +8,19 @@ const mainBtn = document.getElementById('main-btn');
 const inputNameGroup = document.createElement('div');
 inputNameGroup.className = 'input-group';
 inputNameGroup.innerHTML = `
+
   <label for="name">Nome</label>
   <input type="text" id="name" placeholder="Seu nome" minlength="2" maxlength="80">
+
+  <label for="instituicao">Instituição</label>
+  <input type="text" id="instituicao" placeholder="Nome da instituição" minlength="2" maxlength="100">
+
+  <label for="escolaridade">Escolaridade</label>
+  <input type="text" id="escolaridade" placeholder="Sua escolaridade" minlength="2" maxlength="50">
+
+  <label for="endereco">Endereço</label>
+  <input type="text" id="endereco" placeholder="Seu endereço" minlength="5" maxlength="150">
+
 `
 
 let modo = 'login';

@@ -4,7 +4,7 @@ const { authenticate }        = require("../middlewares/auth");
 const calculationService      = require("../services/calculationService");
 const calculationRepository   = require("../repositories/calculationRepository");
 
-const OPERADORES_VALIDOS = ["+", "-", "*", "/", "^", "sqrt", "log"];
+const OPERADORES_VALIDOS = ["+", "-", "*", "/", "^", "sqrt"];
 
 // Schema de validação para o endpoint de cálculo
 const schemaCalculo = {
