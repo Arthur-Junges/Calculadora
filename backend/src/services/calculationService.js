@@ -14,9 +14,6 @@ function calcular(n1, n2, operador) {
     case 'sqrt':
       if (n1 < 0) throw new Error('Raiz de número negativo é indefinida.');
       return Math.sqrt(n1);
-    case 'log':
-      if (n1 <= 0) throw new Error('Log indefinido para número ≤ 0.');
-      return Math.log10(n1);
     default:
       throw new Error('Operador inválido.');
   }
