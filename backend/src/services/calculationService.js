@@ -1,6 +1,6 @@
 //aqui ta os serviços do calculo que vai fazer
 
-const OPERADORES_UNARIOS = ['sqrt', 'log'];
+const OPERADORES_UNARIOS = ['sqrt'];
 
 function calcular(n1, n2, operador) {
   switch (operador) {

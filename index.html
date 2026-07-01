@@ -38,9 +38,13 @@
                     <div id="display-value">0</div>
                 </div>
                 <div class="buttons-grid">
-                    <button class="btn fn" data-action="clear">AC</button>
+                    <button class="btn fn-btn" data-paren="(">(</button>
+                    <button class="btn fn-btn" data-paren=")">)</button>
+                    <button class="btn fn" data-action="clear" style="grid-column: span 2;">AC</button>
+
                     <button class="btn fn-btn" data-action="sign">+/−</button>
                     <button class="btn fn-btn" data-action="percent">%</button>
+                    <button class="btn fn-btn" data-op="^">xʸ</button>
                     <button class="btn operator" data-op="÷">÷</button>
 
                     <button class="btn number">7</button>
@@ -61,8 +65,7 @@
                     <button class="btn number">.</button>
                     <button class="btn equal" id="equals-btn">=</button>
                     <button class="btn fn-btn" data-action="sqrt">√</button>
-                    <button class="btn fn-btn" data-op="^">xʸ</button>
-                    <button class="btn fn-btn" data-action="backspace" style="grid-column: span 2;">⌫</button>
+                    <button class="btn fn-btn" data-action="backspace" style="grid-column: span 3;">⌫</button>
                     
                 </div>
             </section>

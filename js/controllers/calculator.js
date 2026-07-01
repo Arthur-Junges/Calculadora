@@ -1,5 +1,14 @@
 import { calcular, buscarHistorico } from '../services/api.js';
-import { ehOperador, formatarExpressao, operadorParaDisplay, normalizarOperador } from '../utils/format.js';
+
+import {
+  ehOperador,
+  ehParenteseAbre,
+  ehParenteseFecha,
+  ehNaoNumerico,
+  formatarExpressao,
+  operadorParaDisplay,
+  normalizarOperador,
+} from '../utils/format.js';
 
 //se o cookie estiver ausente ou expirado, a primeira chamada retorna 401 e é direcionado automaticamente
 let expressao = [];
@@ -12,7 +21,8 @@ const historyList      = document.getElementById('history-list');
 
 function atualizarDisplay() {
   const ultimo = expressao.at(-1);
-  displayValor.innerText = (ultimo && !ehOperador(ultimo)) ? ultimo : '0';
+  //agora "(" e ")" também fazem o display mostrar '0' em vez do próprio parêntese.
+  displayValor.innerText = (ultimo && !ehNaoNumerico(ultimo)) ? ultimo : '0';
   displayExpressao.innerText = formatarExpressao(expressao);
 }
 
@@ -31,7 +41,7 @@ document.querySelectorAll('.number').forEach((btn) => {
     const digito = btn.innerText;
     if (acabouDeCalcular) { expressao = []; acabouDeCalcular = false; digitandoNumero = false; }
 
-    if (!digitandoNumero || !expressao.length || ehOperador(expressao.at(-1))) {
+    if (!digitandoNumero || !expressao.length || ehNaoNumerico(expressao.at(-1))) {
       expressao.push(digito === '.' ? '0.' : digito);
       digitandoNumero = true;
     } else {
@@ -49,6 +59,7 @@ document.querySelectorAll('[data-op]').forEach((btn) => {
     const op = btn.dataset.op;
     if (!op) return;
     acabouDeCalcular = false;
+    if (ehParenteseAbre(expressao.at(-1))) return;
     if (!expressao.length) expressao.push('0');
     if (ehOperador(expressao.at(-1))) expressao[expressao.length - 1] = op;
     else expressao.push(op);
@@ -57,10 +68,36 @@ document.querySelectorAll('[data-op]').forEach((btn) => {
   });
 });
 
+document.querySelectorAll('[data-paren]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const paren = btn.dataset.paren;
+    if (acabouDeCalcular) { expressao = []; acabouDeCalcular = false; digitandoNumero = false; }
+
+    if (paren === '(') {
+      const ultimo = expressao.at(-1);
+      // Só deixa abrir parêntese em certos casos para não quebrear ex: 2() não entende que é 2 x o que esta dentro do ()
+      if (ultimo !== undefined && !ehOperador(ultimo) && !ehParenteseAbre(ultimo)) return;
+      expressao.push('(');
+      digitandoNumero = false;
+    } else {
+      const abertos  = expressao.filter(ehParenteseAbre).length;
+      const fechados = expressao.filter(ehParenteseFecha).length;
+      const ultimo = expressao.at(-1);
+      // Só fecha se: um parenteses ficou sem fechar, ai compelta e se o token anterior não for operador nem "(" (senão o  parêntese ficaria vazio, tipo "()").
+      if (abertos <= fechados) return;
+      if (ultimo === undefined || ehOperador(ultimo) || ehParenteseAbre(ultimo)) return;
+      expressao.push(')');
+      digitandoNumero = true;
+    }
+    atualizarDisplay();
+  });
+});
+
 // Funções unárias (√ e log)
 async function aplicarUnaria(operador) {
   const ultimo = expressao.at(-1);
-  if (!ultimo || ehOperador(ultimo)) return;
+  // não deixa usar raiz em parenteses sozinho
+  if (!ultimo || ehNaoNumerico(ultimo)) return;
 //normaliza operador garantindo que chegue sqrt e log na api
   const opNormalizado = normalizarOperador(operador);
 
@@ -77,38 +114,104 @@ async function aplicarUnaria(operador) {
   } catch (err) { alert(err.message); }
 }
 
-// Igual — suporta múltiplos números em sequência
-document.getElementById('equals-btn')?.addEventListener('click', async () => {
-  if (expressao.length < 3) return;
-  if (ehOperador(expressao.at(-1))) expressao.pop();
+// precedencia é pra dar prioridade para as operações serem resolvidas
+const PRECEDENCIA = { '^': 3, '*': 2, '/': 2, '+': 1, '-': 1 };
 
-  const textoCompleto = formatarExpressao(expressao);
-  let acumulador = expressao[0];
+//infixa é o jeito que a gente escreve e posfixa é o jeito modificado mais facil para o algoritmo calcular
+function infixaParaPosfixa(tokens) {
+  const saida = [];
+  const pilha = [];
 
-  for (let i = 1; i < expressao.length; i += 2) {
-    const op = normalizarOperador(expressao[i])
-    const n2 = expressao[i + 1];
-    if (!op || !n2) break;
-    try {
-      const calc = await calcular({ 
-        firstNumber: Number(acumulador), 
-        secondNumber: Number(n2), 
-        operator: op,
-      });
-      acumulador = String(parseFloat(calc.result));
-    } catch (err) { 
-       displayValor.innerText = 'Erro';
-       alert(err.message); 
-       return; 
+  for (const token of tokens) {
+    if (ehParenteseAbre(token)) {
+      pilha.push(token);
+    } else if (ehParenteseFecha(token)) {
+      // desempilha tudo até achar o "(" correspondente
+      while (pilha.length && !ehParenteseAbre(pilha.at(-1))) {
+        saida.push(pilha.pop());
+      }
+      pilha.pop(); // descarta o "(" correspondente
+    } else if (ehOperador(token)) {
+      const op = normalizarOperador(token);
+      // desempilha operadores de precedência >= antes de empilhar o novo
+      while (
+        pilha.length &&
+        !ehParenteseAbre(pilha.at(-1)) &&
+        PRECEDENCIA[normalizarOperador(pilha.at(-1))] >= PRECEDENCIA[op]
+      ) {
+        saida.push(pilha.pop());
+      }
+      pilha.push(token);
+    } else {
+      saida.push(token); // número vai direto pra saída
     }
   }
 
+  while (pilha.length) saida.push(pilha.pop());
+  return saida;
+}
+
+
+// Percorre a notação posfixa com uma pilha e, a cada operador encontrado, resolve os dois números do topo da pilha chamando  a API do backend (que continua fazendo só uma operação por vez).
+async function avaliarPosfixa(posfixa) {
+  const pilha = [];
+
+  for (const token of posfixa) {
+    if (ehOperador(token)) {
+      const op = normalizarOperador(token);
+      const n2 = pilha.pop();
+      const n1 = pilha.pop();
+      const calc = await calcular({
+        firstNumber: Number(n1),
+        secondNumber: Number(n2),
+        operator: op,
+      });
+      pilha.push(String(parseFloat(calc.result)));
+    } else {
+      pilha.push(token);
+    }
+  }
+
+  return pilha[0]; // sobra só o resultado final na pilha
+}
+
+// fecha parentesis automaticamente se esqueceu de fechar
+function fecharParentesesPendentes(itens) {
+  const abertos  = itens.filter(ehParenteseAbre).length;
+  const fechados = itens.filter(ehParenteseFecha).length;
+  const faltando = abertos - fechados;
+  return faltando > 0 ? [...itens, ...Array(faltando).fill(')')] : itens;
+}
+
+async function avaliarExpressao(itens) {
+  const completa = fecharParentesesPendentes(itens);
+  const posfixa = infixaParaPosfixa(completa);
+  return avaliarPosfixa(posfixa);
+}
+
+document.getElementById('equals-btn')?.addEventListener('click', async () => {
+  if (expressao.length < 3) return;
+  // limpa operador ou "(" solto no final antes de calcular
+  while (ehOperador(expressao.at(-1)) || ehParenteseAbre(expressao.at(-1))) expressao.pop();
+  if (expressao.length < 3) return;
+
+  const textoCompleto = formatarExpressao(expressao);
+
+  let resultadoFinal;
+  try {
+    resultadoFinal = await avaliarExpressao(expressao);
+  } catch (err) {
+    displayValor.innerText = 'Erro';
+    alert(err.message);
+    return;
+  }
+
   displayExpressao.innerText = textoCompleto + ' =';
-  displayValor.innerText = acumulador;
-  expressao = [acumulador];
-  digitandoNumero = true; 
+  displayValor.innerText = resultadoFinal;
+  expressao = [resultadoFinal];
+  digitandoNumero = true;
   acabouDeCalcular = true;
-  adicionarHistoricoLocal(textoCompleto, acumulador);
+  adicionarHistoricoLocal(textoCompleto, resultadoFinal);
 });
 
 // Botões de ação especial
@@ -122,14 +225,16 @@ document.querySelectorAll('[data-action]').forEach((btn) => {
 
     } else if (action === 'sign') {
       const u = expressao.at(-1);
-      if (u && !ehOperador(u)) {
+      
+      if (u && !ehNaoNumerico(u)) {
         expressao[expressao.length - 1] = (parseFloat(u) * -1).toString();
         atualizarDisplay();
       }
 
     } else if (action === 'percent') {
       const u = expressao.at(-1);
-      if (u && !ehOperador(u)) {
+       
+      if (u && !ehNaoNumerico(u)) {
         expressao[expressao.length - 1] = (parseFloat(u) / 100).toString();
         atualizarDisplay();
       }
@@ -137,14 +242,16 @@ document.querySelectorAll('[data-action]').forEach((btn) => {
     } else if (action === 'backspace') {
       if (acabouDeCalcular || !expressao.length) return;
       const u = expressao.at(-1);
-      if (ehOperador(u)) {
+      // Agora apagar um "()"" some com o token inteiro de uma vez,
+      // igual já acontecia com operador.
+      if (ehNaoNumerico(u)) {
         expressao.pop(); digitandoNumero = true;
       } else if (u.length > 1) {
         expressao[expressao.length - 1] = u.slice(0, -1);
       } else {
         expressao.pop();
         const nu = expressao.at(-1);
-        digitandoNumero = nu ? !ehOperador(nu) : false;
+        digitandoNumero = nu ? !ehNaoNumerico(nu) : false;
       }
       atualizarDisplay();
 
@@ -246,6 +353,14 @@ document.addEventListener('keydown', (e) => {
   // Escape ou Delete — limpar
   if (tecla === 'Escape' || tecla === 'Delete') {
     document.querySelector('[data-action="clear"]')?.click();
+    return;
+  }
+
+ 
+  // Parênteses
+  if (tecla === '(' || tecla === ')') {
+    const btn = document.querySelector(`[data-paren="${tecla}"]`);
+    btn?.click();
     return;
   }
 
