@@ -27,4 +27,17 @@ async function deletarPorUsuario(userId) {
   await db.query('DELETE FROM calculations WHERE user_id = $1', [userId]);
 }
 
-module.exports = { salvar, buscarPorUsuario, deletarPorUsuario };
+// conta quantas operações foi usada por cada usuario
+async function rankingPorUsuario(userId) {
+  const { rows } = await db.query(
+    `SELECT operator, COUNT(*)::int AS quantidade
+     FROM calculations
+     WHERE user_id = $1
+     GROUP BY operator
+     ORDER BY quantidade DESC`,
+    [userId]
+  );
+  return rows;
+}
+
+module.exports = { salvar, buscarPorUsuario, deletarPorUsuario, rankingPorUsuario };

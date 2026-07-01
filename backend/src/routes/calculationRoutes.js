@@ -4,7 +4,7 @@ const { authenticate }        = require("../middlewares/auth");
 const calculationService      = require("../services/calculationService");
 const calculationRepository   = require("../repositories/calculationRepository");
 
-const OPERADORES_VALIDOS = ["+", "-", "*", "/", "^", "sqrt"];
+const OPERADORES_VALIDOS = ["+", "-", "*", "/", "^", "sqrt","nroot"];
 
 // Schema de validação para o endpoint de cálculo
 const schemaCalculo = {
@@ -52,6 +52,11 @@ async function calculationRoutes(app) {
   app.delete("/history", { preHandler: authenticate }, async (request, reply) => {
     await calculationRepository.deletarPorUsuario(request.user.id);
     return reply.send({ message: "Histórico apagado." });
+  });
+
+  app.get("/ranking", { preHandler: authenticate }, async (request, reply) => {
+  const ranking = await calculationRepository.rankingPorUsuario(request.user.id);
+  return reply.send({ ranking });
   });
 }
 

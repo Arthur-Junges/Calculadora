@@ -4,11 +4,14 @@ export function formatarExpressao(expressao) {
 }
 
 export function operadorParaDisplay(op) {
+
+  if ( op === 'nroot') return 'ⁿ√'
+
   return op === '/' ? '÷' : op;
 }
 
 export function ehOperador(val) {
-  return ['+', '-', '*', '÷', '^'].includes(val);
+  return ['+', '-', '*', '÷', '^', 'ⁿ√'].includes(val);
 }
 
 export function ehParenteseAbre(val) {
@@ -26,5 +29,6 @@ export function ehNaoNumerico(val) {
 
 export function normalizarOperador(op) {
   if (op === '÷') return '/';
+  if (op === 'ⁿ√') return 'nroot'
   return op;
 }

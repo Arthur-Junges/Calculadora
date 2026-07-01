@@ -1,4 +1,4 @@
-import { calcular, buscarHistorico } from '../services/api.js';
+import { calcular, buscarHistorico, buscarRanking } from '../services/api.js';
 
 import {
   ehOperador,
@@ -18,6 +18,7 @@ let acabouDeCalcular = false;
 const displayExpressao = document.getElementById('display-expressao');
 const displayValor     = document.getElementById('display-value');
 const historyList      = document.getElementById('history-list');
+const sectionRanking = document.getElementById('section-ranking');
 
 function atualizarDisplay() {
   const ultimo = expressao.at(-1);
@@ -115,7 +116,7 @@ async function aplicarUnaria(operador) {
 }
 
 // precedencia é pra dar prioridade para as operações serem resolvidas
-const PRECEDENCIA = { '^': 3, '*': 2, '/': 2, '+': 1, '-': 1 };
+const PRECEDENCIA = { '^': 3, 'nroot': 3, '*': 2, '/': 2, '+': 1, '-': 1 };
 
 //infixa é o jeito que a gente escreve e posfixa é o jeito modificado mais facil para o algoritmo calcular
 function infixaParaPosfixa(tokens) {
@@ -270,34 +271,48 @@ const sectionHistory = document.getElementById('section-history');
 document.getElementById('btn-show-calc')?.addEventListener('click', () => {
   sectionCalc.style.display    = 'block';
   sectionHistory.style.display = 'none';
+  sectionRanking.style.display = 'none';
 });
 
-document.getElementById('btn-show-history')?.addEventListener('click', async () => {
+//Aba de Ranking de operações usadas   
+document.getElementById('btn-show-ranking')?.addEventListener('click', async () => {
   sectionCalc.style.display    = 'none';
-  sectionHistory.style.display = 'block';
-  historyList.innerHTML = '<p style="text-align:center;color:#888;padding:20px">Carregando...</p>';
+  sectionHistory.style.display = 'none';
+  sectionRanking.style.display = 'block';
 
-  const history = await buscarHistorico();
-  historyList.innerHTML = '';
+  const rankingList = document.getElementById('ranking-list');
+  rankingList.innerHTML = '<p style="text-align:center;color:#888;padding:20px">Carregando...</p>';
 
-  if (!history.length) {
-    historyList.innerHTML = '<p class="empty-msg" style="text-align:center;color:#888;padding:20px">Nenhum cálculo ainda.</p>';
+  const ranking = await buscarRanking();
+  rankingList.innerHTML = '';
+
+  if (!ranking.length) {
+    rankingList.innerHTML = '<p class="empty-msg" style="text-align:center;color:#888;padding:20px">Nenhum cálculo ainda.</p>';
     return;
   }
 
-  history.forEach((c) => {
-    const op   = operadorParaDisplay(c.operator);
-    const expr = c.second_number === null
-      ? `${c.operator}(${c.first_number})`
-      : `${c.first_number} ${op} ${c.second_number}`;
+  // total de cálculos, usado só pra desenhar a barrinha de proporção
+  const total = ranking.reduce((soma, item) => soma + item.quantidade, 0);
 
-    const item = document.createElement('div');
-    item.className = 'history-item';
-    item.style.cssText = 'padding:15px;border-bottom:1px solid #e2e8f0;text-align:right;';
-    item.innerHTML = `<span style="color:#888;font-size:.85em">${expr}</span><br><strong>${c.result}</strong>`;
-    historyList.appendChild(item);
+  ranking.forEach((item, index) => {
+    const simbolo = operadorParaDisplay(item.operator);
+    const percentual = ((item.quantidade / total) * 100).toFixed(1);
+
+    const linha = document.createElement('div');
+    linha.style.cssText = 'padding:15px;border-bottom:1px solid #e2e8f0;';
+    linha.innerHTML = `
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span><strong>#${index + 1}</strong> &nbsp; "${simbolo}"</span>
+        <span>${item.quantidade}x (${percentual}%)</span>
+      </div>
+      <div style="background:#e2e8f0;border-radius:6px;height:8px;overflow:hidden;">
+        <div style="background:#4f46e5;height:100%;width:${percentual}%;"></div>
+      </div>
+    `;
+    rankingList.appendChild(linha);
   });
 });
+
 
 document.getElementById('btn-exit')?.addEventListener('click', () => {
   localStorage.removeItem('token');

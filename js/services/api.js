@@ -31,6 +31,18 @@ export async function buscarHistorico() {
   return data.history || [];
 }
 
+//busca o ranking de operações mais usadas pelo usuario
+export async function buscarRanking() {
+  const res = await fetch(`${API_URL}/api/calculations/ranking`, { credentials: 'include', headers: authHeaders() });
+  if (res.status === 401) {
+    window.location.href = 'autentication.html';
+    return [];
+  }
+  const data = await res.json();
+  return data.ranking || [];
+}
+
+
 export async function login(body) {
   const res = await fetch(`${API_URL}/api/auth/login`, {
     method: 'POST',

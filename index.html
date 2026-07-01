@@ -26,6 +26,7 @@
                 <nav class="nav-actions">
                     <button class="header-btn active" id="btn-show-calc">Calculadora</button>
                     <button class="header-btn" id="btn-show-history">Histórico</button>
+                    <button class="header-btn" id="btn-show-ranking">Ranking</button>
                     <button class="header-btn exit" id="btn-exit">Sair</button>
                 </nav>
             </div>
@@ -65,6 +66,7 @@
                     <button class="btn number">.</button>
                     <button class="btn equal" id="equals-btn">=</button>
                     <button class="btn fn-btn" data-action="sqrt">√</button>
+                    <button class="btn fn-btn" data-op="ⁿ√">ⁿ√</button>
                     <button class="btn fn-btn" data-action="backspace" style="grid-column: span 3;">⌫</button>
                     
                 </div>
@@ -75,6 +77,14 @@
                 <div class="history-box">
                     <p class="empty-msg">Nenhum cálculo ainda.<br>Volte para a calculadora e faça uma operação.</p>
                     <div id="history-list"></div>
+                </div>
+            </section>
+
+            <section id="section-ranking" style="display: none;">
+                <h2 class="section-title">Ranking de operações</h2>
+                <div class="history-box">
+                    <p id="ranking-empty-msg" class="empty-msg">Nenhum cálculo ainda.<br>Faça algumas operações para ver seu ranking.</p>
+                    <div id="ranking-list"></div>
                 </div>
             </section>
         </main>
